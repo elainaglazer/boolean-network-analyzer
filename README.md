@@ -15,5 +15,5 @@ Công cụ hỗ trợ phân tích và trực quan hóa **Boolean Networks**.
 # Công cụ sử dụng
 - Python, Numpy, Pandas
 - PyBoolNet
-- Matplotlib, Graphviz, NetworkX
+- Matplotlib
 - GitHub để quản lý mã nguồn

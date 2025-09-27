@@ -4,7 +4,7 @@ Công cụ hỗ trợ phân tích và trực quan hóa **Boolean Networks**.
 
 - Đọc Boolean Network từ file `.bnet`.
 - Hiển thị Influence Graph.
-- Xây dựng State Transition Graph (cập nhật đồng bộ & bất đồng bộ).
+- Xây dựng State Transition Graph.
 - Tìm và hiển thị các Attractors.
 
 # Hiệu suất (phi chức năng)

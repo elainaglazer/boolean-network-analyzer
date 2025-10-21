@@ -1,8 +1,8 @@
-# Bộ phân tích Boolean Network
+# Bộ phân tích Boolean network
 
-Công cụ hỗ trợ phân tích và trực quan hóa **Boolean Networks**.
+Công cụ hỗ trợ phân tích và trực quan hóa **Boolean networks**.
 
-- Đọc Boolean Network từ file `.bnet`.
+- Đọc Boolean network từ file `.bnet`.
 - Hiển thị Influence Graph.
 - Xây dựng State Transition Graph.
 - Tìm và hiển thị các Attractors.

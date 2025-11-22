@@ -2,21 +2,21 @@ import os
 
 def load_bnet(file_path):
     """
-    Đọc file .bnet và trả về một dictionary chứa các quy tắc Boolean.
-    
-    Args:
-        file_path (str): Đường dẫn đến file .bnet
-        
-    Returns:
-        dict: Dạng {'GeneA': 'GeneB or GeneC', 'GeneB': '!GeneA'}
+    Input: Đường dẫn file .bnet
+    Output: Biến 'rules' (Dictionary)
     """
+    rules = {} # <--- Khởi tạo biến rules
+
     if not os.path.exists(file_path):
-        raise FileNotFoundError(f"File {file_path} not found.")
+        print(f"Error: File {file_path} not found.")
+        return rules
+
+    # TODO: Viết logic đọc file ở đây
+    # 1. Mở file, đọc từng dòng
+    # 2. Tách tên và công thức (bỏ qua dòng targets, factors)
+    # 3. Replace: '!' -> 'not ', '&' -> ' and ', '|' -> ' or '
     
-    rules = {}
-    # TODO: Implement logic đọc file ở đây
-    # 1. Mở file
-    # 2. Đọc từng dòng, bỏ qua comment
-    # 3. Tách tên biến và hàm logic
+    # Ví dụ giả (Sau khi parse xong sẽ được như này):
+    # rules['A'] = 'B or not C'
     
-    return rules
+    return rules # <--- TRẢ VỀ BIẾN RULES Ở ĐÂY

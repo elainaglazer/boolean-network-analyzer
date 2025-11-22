@@ -1,27 +1,28 @@
 import matplotlib.pyplot as plt
 import networkx as nx
 
-def plot_influence_graph(rules):
+def plot_influence_graph(rules): # <--- NHẬN BIẾN RULES Ở ĐÂY
     """
-    Vẽ và hiển thị đồ thị ảnh hưởng (Influence Graph).
+    Input: Biến 'rules' từ parser
+    Nhiệm vụ: Vẽ quan hệ giữa các nút (ai ảnh hưởng tới ai)
     """
     G = nx.DiGraph()
-    # TODO: Parse rules để tìm mối quan hệ cha-con và thêm vào đồ thị
-    # G.add_edge(src, dest, sign=...)
     
-    plt.figure(figsize=(8, 6))
-    # Code vẽ đồ thị tại đây
-    plt.title("Influence Graph")
-    plt.show()
+    # TODO: Logic vẽ
+    # Duyệt qua rules. Nếu công thức của A có chứa B -> Thêm cạnh B->A
+    
+    print("Plotting Influence Graph...")
+    # nx.draw(G, ...)
+    # plt.show()
 
 def plot_stg(stg_edges):
     """
-    Vẽ và hiển thị đồ thị chuyển đổi trạng thái.
+    Input: stg_edges từ analyzer
+    Nhiệm vụ: Vẽ các chấm trạng thái và mũi tên
     """
     G = nx.DiGraph()
     G.add_edges_from(stg_edges)
     
-    plt.figure(figsize=(10, 8))
-    # Code vẽ đồ thị tại đây
-    plt.title("State Transition Graph")
-    plt.show()
+    print("Plotting STG...")
+    # nx.draw(G, ...)
+    # plt.show()

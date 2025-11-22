@@ -3,34 +3,22 @@ from analyzer import generate_stg, find_attractors
 from visualizer import plot_influence_graph, plot_stg
 
 def main():
-    # Đường dẫn file mẫu (tự tạo file .bnet để test)
-    input_file = "input_data/example.bnet" 
-    
-    try:
-        # 1. Đọc dữ liệu
-        print("--- Loading Network ---")
-        rules = load_bnet(input_file)
-        print(f"Loaded {len(rules)} nodes.")
+    # 1. TẠO RULES (Gọi Parser)
+    print("--- Step 1: Loading Rules ---")
+    rules = load_bnet('input_data/example.bnet') # <--- Biến rules được sinh ra ở đây
+    print("Rules loaded:", rules)
 
-        # 2. Vẽ Influence Graph
-        print("--- Plotting Influence Graph ---")
-        plot_influence_graph(rules)
+    # 2. VẼ INFLUENCE GRAPH (Dùng Rules)
+    plot_influence_graph(rules) # <--- Truyền rules vào Visualizer
 
-        # 3. Tính toán STG
-        print("--- Generating State Transition Graph ---")
-        stg = generate_stg(rules, mode='synchronous')
-        
-        # 4. Vẽ STG
-        print("--- Plotting STG ---")
-        plot_stg(stg)
+    # 3. TÍNH TOÁN STG (Dùng Rules)
+    print("--- Step 2: Generating STG ---")
+    stg_edges = generate_stg(rules) # <--- Truyền rules vào Analyzer
 
-        # 5. Tìm Attractors
-        print("--- Finding Attractors ---")
-        attractors = find_attractors(stg)
-        print(f"Found attractors: {attractors}")
-
-    except Exception as e:
-        print(f"Error: {e}")
+    # 4. VẼ STG & TÌM ATTRACTOR (Dùng kết quả của Analyzer)
+    plot_stg(stg_edges)
+    attractors = find_attractors(stg_edges)
+    print("Attractors found:", attractors)
 
 if __name__ == "__main__":
     main()

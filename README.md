@@ -17,7 +17,7 @@ Công cụ hỗ trợ phân tích và trực quan hóa **Boolean networks**.
 - PyBoolNet
 - Matplotlib
 - GitHub để quản lý mã nguồn
-
+```
 src/
 │
 ├── input_data/             # Chứa các file mẫu .bnet để test
@@ -29,7 +29,7 @@ src/
 ├── visualizer.py           # Vẽ đồ thị: Influence Graph, STG
 ├── main.py                 # Chương trình chính: Gọi các hàm từ các file trên
 └── utils.py(?)             # Các hàm phụ trợ (them nếu cần)
-
+```
 Chia việc:
 A: Xử lý Logic (Backend)
 Phụ trách các file: parser.py, analyzer.py

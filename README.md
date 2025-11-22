@@ -86,8 +86,12 @@ cd boolean-network-analyzer
 ```
 Cài thư viện cần thiết
 ```
-pip install numpy pandas matplotlib networkx pyboolnet
+pip install numpy pandas matplotlib networkx
+pip install git+https://github.com/hklarner/pyboolnet
 ```
+
+
+
 Chạy chương trình
 ```
 python src/main.py

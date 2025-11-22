@@ -2,7 +2,7 @@ import itertools
 
 def generate_stg(rules): # <--- NHẬN BIẾN RULES Ở ĐÂY
     """
-    Input: Biến 'rules' từ parser
+    Input: Biến 'rules' từ parser.py
     Output: List các cạnh chuyển đổi trạng thái (stg_edges)
     """
     stg_edges = []

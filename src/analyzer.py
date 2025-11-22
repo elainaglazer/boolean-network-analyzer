@@ -1,31 +1,25 @@
 import itertools
 
-def generate_stg(rules, mode='synchronous'):
+def generate_stg(rules): # <--- NHẬN BIẾN RULES Ở ĐÂY
     """
-    Tạo đồ thị chuyển đổi trạng thái (STG).
-    
-    Args:
-        rules (dict): Dictionary chứa quy tắc Boolean.
-        mode (str): 'synchronous' hoặc 'asynchronous'.
-        
-    Returns:
-        list: Danh sách các cạnh [(state_hien_tai, state_ke_tiep), ...]
+    Input: Biến 'rules' từ parser
+    Output: List các cạnh chuyển đổi trạng thái (stg_edges)
     """
     stg_edges = []
-    # TODO: Implement logic tạo STG
-    # 1. Liệt kê tất cả trạng thái có thể (2^n)
-    # 2. Với mỗi trạng thái, áp dụng rules để tìm trạng thái tiếp theo
+    nodes = sorted(rules.keys()) # Lấy danh sách tên các nút
+    
+    # TODO: Viết logic tạo STG
+    # 1. Tạo tất cả trạng thái nhị phân (000, 001, ..., 111)
+    # 2. Với mỗi trạng thái, dùng eval() trên các công thức trong 'rules'
+    # 3. Lưu kết quả vào stg_edges. VD: stg_edges.append(('000', '001'))
     
     return stg_edges
 
 def find_attractors(stg_edges):
     """
-    Tìm các attractors từ STG.
-    
-    Returns:
-        list: Danh sách các attractor (mỗi attractor là list các state)
+    Input: stg_edges từ hàm trên
+    Output: List các attractor
     """
     attractors = []
-    # TODO: Implement thuật toán tìm chu trình hoặc điểm cố định
-    
+    # TODO: Tìm chu trình hoặc điểm cố định
     return attractors

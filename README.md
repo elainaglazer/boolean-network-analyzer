@@ -63,8 +63,21 @@ Phụ trách các file: visualizer.py, main.py
     3.  **Analyzer** dùng `rules` để tính toán xem hệ thống sẽ chuyển sang trạng thái nào tiếp theo (Sinh ra State Transition Graph).
     4.  **Visualizer** dùng `rules` để vẽ sơ đồ quan hệ cha-con (Influence Graph).
 
-
-
+ví dụ file .bnet gốc
+```
+targets, factors
+GeneA,   GeneB | !GeneC
+GeneB,   GeneA
+GeneC,   GeneA & GeneB
+```
+sau khi xử lí
+```
+rules = {
+    "GeneA": "GeneB or not GeneC",
+    "GeneB": "GeneA",
+    "GeneC": "GeneA and GeneB"
+}
+```
 
 # Clone dự án
 ```bash

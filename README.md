@@ -81,13 +81,17 @@ rules = {
 
 # Clone dự án
 ```bash
+pip install pip --upgrade
+```
+
+```bash
 git clone https://github.com/elainaglazer/boolean-network-analyzer.git
 cd boolean-network-analyzer
 ```
 Cài thư viện cần thiết
 ```
 pip install numpy pandas matplotlib networkx
-pip install git+https://github.com/hklarner/pyboolnet
+pip install --force-reinstall git+https://github.com/hklarner/pyboolnet
 ```
 
 

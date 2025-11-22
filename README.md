@@ -30,8 +30,8 @@ src/
 ├── main.py                 # Chương trình chính: Gọi các hàm từ các file trên
 └── utils.py(?)             # Các hàm phụ trợ (them nếu cần)
 ```
-##Chia việc:
-#A: Xử lý Logic (Backend)
+## Chia việc:
+# A: Xử lý Logic (Backend)
 Phụ trách các file: parser.py, analyzer.py
 
     Task 1 (parser.py): Viết hàm đọc file .bnet. Yêu cầu: Trả về dictionary quy tắc (rules). Xử lý lỗi nếu file sai định dạng.
@@ -40,7 +40,7 @@ Phụ trách các file: parser.py, analyzer.py
 
     Task 3 (analyzer.py): Viết hàm tìm Attractors từ STG đã tạo.
 
-#B: Trực quan hóa & Tích hợp (Frontend/Main)
+# B: Trực quan hóa & Tích hợp (Frontend/Main)
 Phụ trách các file: visualizer.py, main.py
 
     Task 1 (visualizer.py): Dùng networkx và matplotlib để vẽ Influence Graph từ rules.
@@ -52,7 +52,7 @@ Phụ trách các file: visualizer.py, main.py
     Task 4: Đảm bảo chương trình chạy dưới 10s với mạng 20 nodes.
 
 
-#Note: Biến `rules` là gì?
+# Note: Biến `rules` là gì?
 
 * **Về mặt ý nghĩa:** Nó đại diện cho **cấu trúc mạng lưới** (Network Topology). Nó quy định nút nào điều khiển nút nào.
 * **Về mặt luồng dữ liệu (Data Flow):**
@@ -64,7 +64,7 @@ Phụ trách các file: visualizer.py, main.py
 
 
 
-#Clone dự án
+# Clone dự án
 ```bash
 git clone [https://github.com/elainaglazer/boolean-network-analyzer.git](https://github.com/elainaglazer/boolean-network-analyzer.git)
 cd boolean-network-analyzer
@@ -73,6 +73,6 @@ Cài thư viện cần thiết
 ```
 pip install numpy pandas matplotlib networkx pyboolnet
 ```
-# 3. Chạy chương trình
+Chạy chương trình
 ```
 python src/main.py

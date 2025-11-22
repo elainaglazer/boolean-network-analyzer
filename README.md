@@ -17,6 +17,8 @@ Công cụ hỗ trợ phân tích và trực quan hóa **Boolean networks**.
 - PyBoolNet
 - Matplotlib
 - GitHub để quản lý mã nguồn
+
+# Cấu trúc
 ```
 src/
 │

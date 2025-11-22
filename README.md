@@ -52,6 +52,17 @@ Phụ trách các file: visualizer.py, main.py
     Task 4: Đảm bảo chương trình chạy dưới 10s với mạng 20 nodes.
 
 
+NOTE: Biến `rules` là gì?
+
+* **Về mặt ý nghĩa:** Nó đại diện cho **cấu trúc mạng lưới** (Network Topology). Nó quy định nút nào điều khiển nút nào.
+* **Về mặt luồng dữ liệu (Data Flow):**
+    1.  **File .bnet** (Input thô) chứa quy tắc viết cho người đọc (VD: `A, B | !C`).
+    2.  **Parser** chuyển hóa nó thành **`rules`** (VD: `'A': 'B or not C'`) để Python có thể hiểu và tính toán được.
+    3.  **Analyzer** dùng `rules` để tính toán xem hệ thống sẽ chuyển sang trạng thái nào tiếp theo (Sinh ra State Transition Graph).
+    4.  **Visualizer** dùng `rules` để vẽ sơ đồ quan hệ cha-con (Influence Graph).
+
+
+
 
 Clone dự án
 ```bash

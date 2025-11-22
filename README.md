@@ -81,7 +81,7 @@ rules = {
 
 # Clone dự án
 ```bash
-git clone [https://github.com/elainaglazer/boolean-network-analyzer.git](https://github.com/elainaglazer/boolean-network-analyzer.git)
+git clone https://github.com/elainaglazer/boolean-network-analyzer.git
 cd boolean-network-analyzer
 ```
 Cài thư viện cần thiết

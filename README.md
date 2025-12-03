@@ -1,6 +1,6 @@
 # Bộ phân tích Boolean network
 
-Công cụ hỗ trợ phân tích và trực quan hóa **Boolean networks** sử dụng phương pháp **BDDs**.
+Công cụ hỗ trợ phân tích và trực quan hóa **Boolean networks** sử dụng phương pháp **Binary Decision Diagrams**.
 
 - Đọc Boolean network từ file `.bnet`.
 - Hiển thị Influence Graph (Mạng lưới tương tác).
@@ -102,16 +102,16 @@ pip install -r requirements.txt
   python src/main.py tc_1 tc_2
   ```
 
-4. **Chạy Benchmark (Kiểm thử)**
-- **Kiểm tra độ chính xác (Accuracy):**
-  So sánh kết quả giữa PyBoolNet và thuật toán vét cạn (Brute Force).
+4. **Chạy Benchmark**
+- **Kiểm tra độ chính xác:**
+  So sánh kết quả giữa PyBoolNet và thuật toán vét cạn
   ```bash
   python src/benchmark_accuracy.py 5   # Test với mạng ngẫu nhiên 5 nodes
   python src/benchmark_accuracy.py 8   # Test với mạng ngẫu nhiên 8 nodes
   ```
 
 - **Đo thời gian thực thi (Time):**
-  Vẽ biểu đồ hiệu năng từ 1 đến 30 nodes.
+  Vẽ biểu đồ hiệu năng từ 1 đến 30 nodes
   ```bash
   python src/benchmark_time.py
   ```

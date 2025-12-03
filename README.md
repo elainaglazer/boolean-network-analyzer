@@ -102,11 +102,6 @@ pip install -r requirements.txt
   python src/main.py tc_1 tc_2
   ```
 
-- **Chạy với file .bnet tùy chỉnh:**
-  ```bash
-  python src/main.py "path/to/your/file.bnet"
-  ```
-
 4. **Chạy Benchmark (Kiểm thử)**
 - **Kiểm tra độ chính xác (Accuracy):**
   So sánh kết quả giữa PyBoolNet và thuật toán vét cạn (Brute Force).

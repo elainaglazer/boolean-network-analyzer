@@ -1,6 +1,6 @@
 # Bộ phân tích Boolean network
 
-Công cụ hỗ trợ phân tích và trực quan hóa **Boolean networks** sử dụng phương pháp **(BDDs)**.
+Công cụ hỗ trợ phân tích và trực quan hóa **Boolean networks** sử dụng phương pháp **BDDs**.
 
 - Đọc Boolean network từ file `.bnet`.
 - Hiển thị Influence Graph (Mạng lưới tương tác).

@@ -1,0 +1,4 @@
+targets, factors
+GeneA, GeneA
+GeneB, GeneA
+GeneC, GeneB | GeneA

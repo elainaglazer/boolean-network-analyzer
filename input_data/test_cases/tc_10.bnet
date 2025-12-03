@@ -1,0 +1,6 @@
+targets, factors
+GeneA, GeneB & !GeneE
+GeneB, GeneC | GeneA
+GeneC, !GeneD
+GeneD, GeneE & GeneA
+GeneE, !GeneB

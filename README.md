@@ -1,58 +1,54 @@
 # Bộ phân tích Boolean network
 
-Công cụ hỗ trợ phân tích và trực quan hóa **Boolean networks**.
+Công cụ hỗ trợ phân tích và trực quan hóa **Boolean networks** sử dụng phương pháp **(BDDs)**.
 
 - Đọc Boolean network từ file `.bnet`.
-- Hiển thị Influence Graph.
-- Xây dựng State Transition Graph.
-- Tìm và hiển thị các Attractors.
+- Hiển thị Influence Graph (Mạng lưới tương tác).
+- Xây dựng State Transition Graph (STG) (cho mạng nhỏ).
+- Tìm và hiển thị các Attractors (Fixed Points & Limit Cycles) với độ chính xác 100%.
 
-# Hiệu suất (phi chức năng)
-- Xử lý mạng 10–15 nodes: < 2 giây.
-- Xử lý mạng 20 nodes: < 10 giây.
-- Báo lỗi nếu input không hợp lệ.
+# Hiệu suất
+- **Công nghệ:** Sử dụng Binary Decision Diagrams (BDDs) thông qua thư viện `PyBoolNet`.
+- **Tốc độ:**
+    - Mạng < 20 nodes: Xử lý tức thì (< 0.5s).
+    - Mạng 30 nodes: Tìm Attractors trong vài giây.
+- **Lưu ý:** Vẽ STG chỉ khả dụng cho mạng <= 12 nodes.
 
 # Công cụ sử dụng
-- Python, Numpy, Pandas
-- PyBoolNet
-- Matplotlib
-- GitHub để quản lý mã nguồn
+- Python 3.9+
+- **PyBoolNet** (Core Engine)
+- NetworkX, Matplotlib (Visualization)
 
-# Cấu trúc
+# Cấu trúc thư mục
 ```
 src/
 │
-├── input_data/             # Chứa các file mẫu .bnet để test
-│   ├── example1.bnet
-│   └── ...
+├── input_data/test_cases/  # Chứa các file mẫu .bnet
 │
-├── parser.py               # Đọc và xử lý file .bnet
-├── analyzer.py             # Xử lý logic: Tính toán trạng thái, tìm Attractors
-├── visualizer.py           # Vẽ đồ thị: Influence Graph, STG
-├── main.py                 # Chương trình chính: Gọi các hàm từ các file trên
-└── utils.py(?)             # Các hàm phụ trợ (them nếu cần)
+├── main.py                 # Chương trình chính (Entry point)
+├── pyboolnet_analyzer.py   # Wrapper cho PyBoolNet (Formal Verification)
+├── visualizer.py           # Vẽ đồ thị (Influence Graph, STG)
+├── bnet_parser.py          # Parser tùy chỉnh (cho Visualization)
+├── benchmark_accuracy.py   # Kiểm chứng độ chính xác (vs Brute Force)
+├── benchmark_time.py       # Đo thời gian thực thi
+└── benchmark_utils.py      # Các hàm hỗ trợ benchmark
 ```
-## Chia việc:
-# A: Xử lý Logic (Backend)
-Phụ trách các file: parser.py, analyzer.py
 
-    Task 1 (parser.py): Viết hàm đọc file .bnet. Yêu cầu: Trả về dictionary quy tắc (rules). Xử lý lỗi nếu file sai định dạng.
+# Chi tiết Module
 
-    Task 2 (analyzer.py): Viết hàm tạo STG (State Transition Graph). Đầu vào là rules, đầu ra là danh sách các cạnh (edges) giữa các trạng thái.
+1.  **Logic & Phân tích (`pyboolnet_analyzer.py`)**:
+    -   Sử dụng `PyBoolNet` để chuyển đổi file `.bnet` sang định dạng Primes.
+    -   Tính toán Attractors bằng thuật toán tượng trưng (Symbolic Algorithms).
+    -   Tự động bỏ qua vẽ STG nếu mạng quá lớn (>12 nodes).
 
-    Task 3 (analyzer.py): Viết hàm tìm Attractors từ STG đã tạo.
+2.  **Trực quan hóa (`visualizer.py`)**:
+    -   Vẽ **Influence Graph**: Quan hệ giữa các gen.
+    -   Vẽ **STG**: Các trạng thái và chuyển đổi (nếu mạng nhỏ).
 
-# B: Trực quan hóa & Tích hợp (Frontend/Main)
-Phụ trách các file: visualizer.py, main.py
-
-    Task 1 (visualizer.py): Dùng networkx và matplotlib để vẽ Influence Graph từ rules.
-
-    Task 2 (visualizer.py): Vẽ State Transition Graph (STG) từ dữ liệu nodes/edges mà bên Logic cung cấp.
-
-    Task 3 (main.py): Viết luồng chạy chính: Nhập file -> Gọi Parser -> Gọi Analyzer -> Gọi Visualizer -> Xuất kết quả.
-
-    Task 4: Đảm bảo chương trình chạy dưới 10s với mạng 20 nodes.
-
+3.  **Giao diện (`main.py`)**:
+    -   Nhận đầu vào từ dòng lệnh.
+    -   Điều phối luồng chạy: Parser -> Analyzer -> Visualizer.
+    -   Xuất kết quả ra màn hình và lưu vào thư mục `output/`.
 
 # Note: Biến `rules` là gì?
 
@@ -79,23 +75,42 @@ rules = {
 }
 ```
 
-# Clone dự án
-```bash
-pip install pip --upgrade
-```
+# Cài đặt & Chạy
 
+1. **Clone dự án**
 ```bash
 git clone https://github.com/elainaglazer/boolean-network-analyzer.git
 cd boolean-network-analyzer
 ```
-Cài thư viện cần thiết
-```
-pip install numpy pandas matplotlib networkx
-pip install --force-reinstall git+https://github.com/hklarner/pyboolnet
+
+2. **Cài đặt thư viện**
+```bash
+pip install -r requirements.txt
 ```
 
+3. **Chạy chương trình**
+- **Chạy với Test Case có sẵn:**
+  python src/main.py <test case name> hoặc python src/main.py "path/to/your/file.bnet"
+   ```bash
+  python src/main.py tc_100_nodes
+  ```
 
+- **Chạy với file .bnet tùy chỉnh:**
+  ```bash
+  python src/main.py "path/to/your/file.bnet"
+  ```
 
-Chạy chương trình
-```
-python src/main.py
+4. **Chạy Benchmark (Kiểm thử)**
+- **Kiểm tra độ chính xác (Accuracy):**
+  So sánh kết quả giữa PyBoolNet và thuật toán vét cạn (Brute Force).
+  ```bash
+  python src/benchmark_accuracy.py 5   # Test với mạng ngẫu nhiên 5 nodes
+  python src/benchmark_accuracy.py 8   # Test với mạng ngẫu nhiên 8 nodes
+  ```
+
+- **Đo thời gian thực thi (Time):**
+  Vẽ biểu đồ hiệu năng từ 1 đến 30 nodes.
+  ```bash
+  python src/benchmark_time.py
+  ```
+  Kết quả biểu đồ sẽ được lưu tại `output/benchmark_execution_time.png`.

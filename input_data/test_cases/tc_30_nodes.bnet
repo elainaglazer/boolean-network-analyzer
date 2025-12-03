@@ -1,0 +1,31 @@
+targets, factors
+Gene01, !Gene08 & Gene09 & Gene15
+Gene02, !Gene20 | Gene05
+Gene03, !Gene27 | !Gene28
+Gene04, Gene06
+Gene05, Gene24
+Gene06, !Gene14 | !Gene20
+Gene07, Gene21
+Gene08, Gene01 & Gene15
+Gene09, !Gene04 & Gene03
+Gene10, Gene15
+Gene11, !Gene04 | Gene03
+Gene12, !Gene09 & Gene12 | !Gene17
+Gene13, Gene25 | Gene11
+Gene14, Gene27 & !Gene19 & !Gene06
+Gene15, Gene11 | Gene28
+Gene16, !Gene02 | !Gene16
+Gene17, !Gene30 & !Gene15
+Gene18, !Gene07 & !Gene05
+Gene19, Gene18
+Gene20, !Gene08 | !Gene03 | !Gene01
+Gene21, Gene11 & Gene22
+Gene22, Gene19
+Gene23, !Gene13
+Gene24, Gene23
+Gene25, !Gene05 & !Gene16
+Gene26, Gene27 | Gene06 & !Gene05
+Gene27, Gene11 | !Gene24 | !Gene28
+Gene28, !Gene24 & !Gene27 | !Gene21
+Gene29, Gene05 & Gene16
+Gene30, Gene23 & Gene14 & Gene22

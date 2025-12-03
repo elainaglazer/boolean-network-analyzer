@@ -1,0 +1,101 @@
+targets, factors
+Gene01, Gene19
+Gene02, Gene09
+Gene03, !Gene67
+Gene04, !Gene60 & Gene34 | Gene81
+Gene05, Gene18
+Gene06, !Gene59 | Gene03 & !Gene08
+Gene07, !Gene57 & Gene11
+Gene08, !Gene37 | !Gene38 & !Gene100
+Gene09, Gene29 | !Gene20 | Gene62
+Gene10, !Gene03 | !Gene88 & Gene31
+Gene11, !Gene71 | !Gene41
+Gene12, Gene19
+Gene13, !Gene50 & Gene61 | Gene16
+Gene14, Gene72 | Gene44 & Gene29
+Gene15, !Gene25
+Gene16, Gene88
+Gene17, Gene61 & Gene30 & Gene76
+Gene18, !Gene64 | Gene63 & !Gene73
+Gene19, Gene75 & Gene64
+Gene20, Gene57 & !Gene40
+Gene21, !Gene64
+Gene22, !Gene37
+Gene23, !Gene100 | !Gene16
+Gene24, Gene58 | Gene69 & !Gene71
+Gene25, Gene15 | !Gene86 & !Gene20
+Gene26, Gene49 | Gene50
+Gene27, Gene58 & !Gene65 & Gene24
+Gene28, !Gene59 | !Gene83 & !Gene48
+Gene29, !Gene65 & Gene70
+Gene30, !Gene48 & !Gene70
+Gene31, Gene52
+Gene32, !Gene41
+Gene33, !Gene39 | Gene83
+Gene34, Gene69
+Gene35, Gene45 | !Gene37 & !Gene77
+Gene36, !Gene26 & Gene73 & !Gene80
+Gene37, Gene44 & !Gene80
+Gene38, !Gene99
+Gene39, Gene75 | !Gene14
+Gene40, Gene29 | Gene39
+Gene41, Gene12 & !Gene55 & !Gene20
+Gene42, Gene40 | !Gene72 | Gene09
+Gene43, Gene37 | !Gene20
+Gene44, !Gene36 & !Gene10 & !Gene81
+Gene45, Gene03 | Gene46 | !Gene31
+Gene46, !Gene63 | Gene35
+Gene47, !Gene100 & Gene60
+Gene48, !Gene29 | Gene99
+Gene49, !Gene94
+Gene50, !Gene96 | Gene84 | !Gene89
+Gene51, Gene13 | Gene19
+Gene52, !Gene53 & !Gene54
+Gene53, !Gene46
+Gene54, Gene63
+Gene55, Gene18 & Gene77
+Gene56, !Gene42 & !Gene32
+Gene57, Gene24 & !Gene55 & !Gene04
+Gene58, Gene68 | !Gene88
+Gene59, Gene20 & !Gene38 & Gene49
+Gene60, !Gene40
+Gene61, Gene69
+Gene62, !Gene91
+Gene63, Gene79
+Gene64, Gene60 | Gene91 & Gene42
+Gene65, Gene91 & !Gene01 & !Gene82
+Gene66, !Gene65
+Gene67, Gene48
+Gene68, !Gene46
+Gene69, Gene64
+Gene70, Gene06 | !Gene96
+Gene71, !Gene26 | Gene33
+Gene72, Gene28 | Gene41 & Gene25
+Gene73, !Gene25 | Gene32
+Gene74, !Gene78
+Gene75, !Gene50 | Gene49 | !Gene63
+Gene76, Gene51 | Gene96 | !Gene52
+Gene77, !Gene66 | !Gene56
+Gene78, Gene21 & !Gene24 & Gene47
+Gene79, !Gene76
+Gene80, Gene45 & !Gene86 & Gene26
+Gene81, !Gene88
+Gene82, !Gene56 & Gene19
+Gene83, !Gene73 & Gene86 | Gene68
+Gene84, !Gene72 | Gene79 & !Gene18
+Gene85, !Gene51 | Gene40 | Gene79
+Gene86, !Gene13 | !Gene45
+Gene87, !Gene54
+Gene88, !Gene96 | Gene45
+Gene89, !Gene43
+Gene90, Gene71
+Gene91, !Gene63 & !Gene92 & !Gene50
+Gene92, !Gene60
+Gene93, Gene92
+Gene94, Gene54 | !Gene65 | !Gene07
+Gene95, Gene58
+Gene96, Gene23 | !Gene13 | !Gene73
+Gene97, Gene75 | Gene86
+Gene98, Gene74 & Gene18 | !Gene12
+Gene99, Gene75
+Gene100, Gene51 | Gene100

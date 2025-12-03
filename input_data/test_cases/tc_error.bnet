@@ -1,0 +1,13 @@
+targets, factors
+
+# 1. Valid rules
+GeneA, GeneB & GeneC
+
+# 2. Syntax Error: Missing comma
+GeneC !GeneA
+
+# 3. Logic Error: Reference to undefined node 'Z'
+GeneD, GeneA | GeneZ
+
+# 4. Syntax Error: Empty target
+, GeneA & GeneB

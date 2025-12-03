@@ -75,7 +75,7 @@ rules = {
 }
 ```
 
-# Cài đặt & Chạy
+# Installation
 
 1. **Clone dự án**
 ```bash

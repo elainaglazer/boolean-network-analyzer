@@ -90,9 +90,16 @@ pip install -r requirements.txt
 
 3. **Chạy chương trình**
 - **Chạy với Test Case có sẵn:**
-  python src/main.py <test case name> hoặc python src/main.py "path/to/your/file.bnet"
+```bash
+  python src/main.py <test case name> <test case name #2> 
+```
+  hoặc 
+  ```bash
+  python src/main.py "path/to/your/file.bnet"
+  ```
+  usage:
    ```bash
-  python src/main.py tc_100_nodes
+  python src/main.py tc_1 tc_2
   ```
 
 - **Chạy với file .bnet tùy chỉnh:**

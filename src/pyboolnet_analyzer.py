@@ -1,5 +1,6 @@
 import os
 import sys
+import networkx as nx
 from contextlib import contextmanager
 
 # Try to import pyboolnet
@@ -20,6 +21,56 @@ def suppress_stdout():
             yield
         finally:
             sys.stdout = old_stdout
+
+def find_attractors_exact(stg_graph):
+    """
+    Finds attractors exactly using Tarjan's algorithm on the STG.
+    Returns a structure compatible with PyBoolNet's output.
+    """
+    attractors = []
+    sccs = list(nx.strongly_connected_components(stg_graph))
+    
+    for scc in sccs:
+        # Check if it's a terminal SCC (no edges leaving the set)
+        is_terminal = True
+        for node in scc:
+            for neighbor in stg_graph.neighbors(node):
+                if neighbor not in scc:
+                    is_terminal = False
+                    break
+            if not is_terminal:
+                break
+        
+        if is_terminal:
+            # Sort states to be deterministic
+            states = sorted(list(scc))
+            if len(states) > 1:
+                cycle_path = []
+                curr = states[0]
+                visited = set()
+                while curr not in visited:
+                    visited.add(curr)
+                    cycle_path.append(curr)
+                    # Find next state in SCC
+                    for neighbor in stg_graph.neighbors(curr):
+                        if neighbor in scc:
+                            curr = neighbor
+                            break
+                state_repr = " -> ".join(cycle_path)
+            else:
+                state_repr = states[0]
+
+            is_steady = (len(states) == 1)
+            
+            attractors.append({
+                'is_steady': is_steady,
+                'state': {'str': state_repr},
+                'min_trap_space': {'str': 'Exact-STG'}
+            })
+    
+    # Sort attractors by state string to be deterministic
+    attractors.sort(key=lambda x: x['state']['str'])
+    return {'attractors': attractors}
 
 def analyze_with_pyboolnet(bnet_file, silent=False, compute_stg=False):
     if not PYBOOLNET_AVAILABLE:
@@ -60,6 +111,9 @@ def analyze_with_pyboolnet(bnet_file, silent=False, compute_stg=False):
                 with suppress_stdout():
                     stg_graph = primes2stg(primes, update="synchronous")
                 stg_edges = list(stg_graph.edges())
+                
+                # Use exact STG analysis for small networks
+                attractors_info = find_attractors_exact(stg_graph)
 
         return primes, attractors_info, stg_edges
 

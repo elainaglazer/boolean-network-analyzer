@@ -22,11 +22,6 @@ def suppress_stdout():
             sys.stdout = old_stdout
 
 def analyze_with_pyboolnet(bnet_file, silent=False, compute_stg=False):
-    """
-    Uses the PyBoolNet library to analyze the network.
-    This uses advanced BDD (Binary Decision Diagram) based algorithms
-    which are much faster and more accurate than brute force or random sampling.
-    """
     if not PYBOOLNET_AVAILABLE:
         if not silent:
             print("❌ Error: PyBoolNet is not installed.")

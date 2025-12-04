@@ -53,7 +53,7 @@ def plot_stg(stg_edges, output_path='output/stg.png'):
         figsize = (8, 8)
         node_size = 2000
         font_size = 12
-        k_layout = 0.8  # Spread nodes out more
+        k_layout = 0.8
         arrow_size = 20
     elif num_nodes < 100:
         figsize = (10, 10)
@@ -69,9 +69,7 @@ def plot_stg(stg_edges, output_path='output/stg.png'):
         arrow_size = 10
 
     plt.figure(figsize=figsize)
-    
-    # Spring layout helps separate connected components (basins of attraction)
-    # k controls the distance between nodes.
+    #spring layout
     pos = nx.spring_layout(G, k=k_layout, iterations=50)
     
     nx.draw(G, pos, with_labels=True, node_color='lightgreen', 
@@ -79,4 +77,4 @@ def plot_stg(stg_edges, output_path='output/stg.png'):
     
     plt.title(f"State Transition Graph (STG) - {num_nodes} States")
     plt.savefig(output_path)
-    plt.close() # Close the figure to free memory
+    plt.close()

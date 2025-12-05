@@ -3,6 +3,7 @@
 Công cụ hỗ trợ phân tích và trực quan hóa **Boolean networks** sử dụng phương pháp **Binary Decision Diagrams**.
 
 - Đọc Boolean network từ file `.bnet`.
+- Hỗ trợ cập nhật **Synchronous** (Đồng bộ) và **Asynchronous** (Bất đồng bộ).
 - Hiển thị Influence Graph (Mạng lưới tương tác).
 - Xây dựng State Transition Graph (STG) (cho mạng nhỏ).
 - Tìm và hiển thị các Attractors (Fixed Points & Limit Cycles) với độ chính xác 100%.
@@ -32,6 +33,19 @@ src/
 ├── benchmark_accuracy.py   # Kiểm chứng độ chính xác (vs Brute Force)
 ├── benchmark_time.py       # Đo thời gian thực thi
 └── benchmark_utils.py      # Các hàm hỗ trợ benchmark
+```
+
+# Hướng dẫn sử dụng
+
+### 1. Chạy phân tích cơ bản (Synchronous)
+```bash
+python src/main.py tc_6
+```
+
+### 2. Chạy phân tích Asynchronous
+Sử dụng cờ `--async` để kích hoạt chế độ cập nhật bất đồng bộ.
+```bash
+python src/main.py tc_6 --async
 ```
 
 # Chi tiết Module

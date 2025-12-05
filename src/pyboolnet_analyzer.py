@@ -72,14 +72,14 @@ def find_attractors_exact(stg_graph):
     attractors.sort(key=lambda x: x['state']['str'])
     return {'attractors': attractors}
 
-def analyze_with_pyboolnet(bnet_file, silent=False, compute_stg=False):
+def analyze_with_pyboolnet(bnet_file, silent=False, compute_stg=False, update_scheme='synchronous'):
     if not PYBOOLNET_AVAILABLE:
         if not silent:
             print("❌ Error: PyBoolNet is not installed.")
         return None, None, None
 
     if not silent:
-        print(f"   PyBoolNet (BDDs)")
+        print(f"   PyBoolNet (BDDs) - {update_scheme.capitalize()} Update")
     
     # 1. Parse BNET file to 'Primes' (PyBoolNet's internal format)
     try:
@@ -97,7 +97,7 @@ def analyze_with_pyboolnet(bnet_file, silent=False, compute_stg=False):
         print("   Computing attractors")
     try:
         with suppress_stdout():
-            attractors_info = compute_attractors(primes, update="synchronous")
+            attractors_info = compute_attractors(primes, update=update_scheme)
         
         stg_edges = None
         if compute_stg:
@@ -109,7 +109,7 @@ def analyze_with_pyboolnet(bnet_file, silent=False, compute_stg=False):
                 if not silent:
                     print("   Generating STG")
                 with suppress_stdout():
-                    stg_graph = primes2stg(primes, update="synchronous")
+                    stg_graph = primes2stg(primes, update=update_scheme)
                 stg_edges = list(stg_graph.edges())
                 
                 # Use exact STG analysis for small networks

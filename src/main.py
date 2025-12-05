@@ -40,7 +40,7 @@ def save_results(base_name, attractors_info):
         print(f"  {i}. {type_str}")
         print(f"     State: {state_repr}")
 
-def run_analysis(input_file, base_name):
+def run_analysis(input_file, base_name, update_scheme='synchronous'):
     print(f"File: {input_file}")
     
     # 2. Load Network
@@ -55,7 +55,7 @@ def run_analysis(input_file, base_name):
     plot_influence_graph(rules, output_path=influence_output)
 
     # 4. Analyze (PyBoolNet)
-    _, attractors_info, stg_edges = analyze_with_pyboolnet(input_file, compute_stg=True)
+    _, attractors_info, stg_edges = analyze_with_pyboolnet(input_file, compute_stg=True, update_scheme=update_scheme)
     
     if attractors_info:
         print_section("Result:")
@@ -93,14 +93,24 @@ def main():
     if not os.path.exists(OUTPUT_DIR):
         os.makedirs(OUTPUT_DIR)
 
-    if len(sys.argv) < 2:
-        print("Usage: python src/main.py <test_case_name>")
+    args = sys.argv[1:]
+    update_scheme = 'synchronous'
+    
+    if '--async' in args:
+        update_scheme = 'asynchronous'
+        args.remove('--async')
+        print("Mode: Asynchronous Update")
+    else:
+        print("Mode: Synchronous Update")
+
+    if not args:
+        print("Usage: python src/main.py <test_case_name> [--async]")
         return
 
-    for arg in sys.argv[1:]:
+    for arg in args:
         input_file, base_name = resolve_input_path(arg)
         if input_file:
-            run_analysis(input_file, base_name)
+            run_analysis(input_file, base_name, update_scheme)
         else:
             print(f"Error: Could not find input file for '{arg}'")
 

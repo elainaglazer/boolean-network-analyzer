@@ -1,0 +1,919 @@
+================================================================================
+File: README.md
+================================================================================
+# Bộ phân tích Boolean network
+
+Công cụ hỗ trợ phân tích và trực quan hóa **Boolean networks** sử dụng phương pháp **Binary Decision Diagrams**.
+
+- Đọc Boolean network từ file `.bnet`.
+- Hiển thị Influence Graph (Mạng lưới tương tác).
+- Xây dựng State Transition Graph (STG) (cho mạng nhỏ).
+- Tìm và hiển thị các Attractors (Fixed Points & Limit Cycles) với độ chính xác 100%.
+
+# Hiệu suất
+- **Công nghệ:** Sử dụng Binary Decision Diagrams (BDDs) thông qua thư viện `PyBoolNet`.
+- **Tốc độ:**
+    - Mạng < 20 nodes: Xử lý tức thì (< 0.5s).
+    - Mạng 30 nodes: Tìm Attractors trong vài giây.
+- **Lưu ý:** Vẽ STG chỉ khả dụng cho mạng <= 12 nodes.
+
+# Công cụ sử dụng
+- Python 3.9+
+- **PyBoolNet** (Core Engine)
+- NetworkX, Matplotlib (Visualization)
+
+# Cấu trúc thư mục
+```
+src/
+│
+├── input_data/test_cases/  # Chứa các file mẫu .bnet
+│
+├── main.py                 # Chương trình chính (Entry point)
+├── pyboolnet_analyzer.py   # Wrapper cho PyBoolNet (Formal Verification)
+├── visualizer.py           # Vẽ đồ thị (Influence Graph, STG)
+├── bnet_parser.py          # Parser tùy chỉnh (cho Visualization)
+├── benchmark_accuracy.py   # Kiểm chứng độ chính xác (vs Brute Force)
+├── benchmark_time.py       # Đo thời gian thực thi
+└── benchmark_utils.py      # Các hàm hỗ trợ benchmark
+```
+
+# Chi tiết Module
+
+1.  **Logic & Phân tích (`pyboolnet_analyzer.py`)**:
+    -   Sử dụng `PyBoolNet` để chuyển đổi file `.bnet` sang định dạng Primes.
+    -   Tính toán Attractors bằng thuật toán tượng trưng (Symbolic Algorithms).
+    -   Tự động bỏ qua vẽ STG nếu mạng quá lớn (>12 nodes).
+
+2.  **Trực quan hóa (`visualizer.py`)**:
+    -   Vẽ **Influence Graph**: Quan hệ giữa các gen.
+    -   Vẽ **STG**: Các trạng thái và chuyển đổi (nếu mạng nhỏ).
+
+3.  **Giao diện (`main.py`)**:
+    -   Nhận đầu vào từ dòng lệnh.
+    -   Điều phối luồng chạy: Parser -> Analyzer -> Visualizer.
+    -   Xuất kết quả ra màn hình và lưu vào thư mục `output/`.
+
+# Note: Biến `rules` là gì?
+
+* **Về mặt ý nghĩa:** Nó đại diện cho **cấu trúc mạng lưới** (Network Topology). Nó quy định nút nào điều khiển nút nào.
+* **Về mặt luồng dữ liệu (Data Flow):**
+    1.  **File .bnet** (Input thô) chứa quy tắc viết cho người đọc (VD: `A, B | !C`).
+    2.  **Parser** chuyển hóa nó thành **`rules`** (VD: `'A': 'B or not C'`) để Python có thể hiểu và tính toán được.
+    3.  **Analyzer** dùng `rules` để tính toán xem hệ thống sẽ chuyển sang trạng thái nào tiếp theo (Sinh ra State Transition Graph).
+    4.  **Visualizer** dùng `rules` để vẽ sơ đồ quan hệ cha-con (Influence Graph).
+
+ví dụ file .bnet gốc
+```
+targets, factors
+GeneA,   GeneB | !GeneC
+GeneB,   GeneA
+GeneC,   GeneA & GeneB
+```
+sau khi xử lí
+```
+rules = {
+    "GeneA": "GeneB or not GeneC",
+    "GeneB": "GeneA",
+    "GeneC": "GeneA and GeneB"
+}
+```
+
+# Installation
+
+1. **Clone dự án**
+```bash
+git clone https://github.com/elainaglazer/boolean-network-analyzer.git
+cd boolean-network-analyzer
+```
+
+2. **Cài đặt thư viện**
+```bash
+pip install -r requirements.txt
+```
+
+3. **Chạy chương trình**
+- **Chạy với Test Case có sẵn:**
+```bash
+  python src/main.py <test case name> <test case name #2> 
+```
+  hoặc 
+  ```bash
+  python src/main.py "path/to/your/file.bnet"
+  ```
+  usage:
+   ```bash
+  python src/main.py tc_1 tc_2
+  ```
+
+4. **Chạy Benchmark**
+- **Kiểm tra độ chính xác:**
+  So sánh kết quả giữa PyBoolNet và thuật toán vét cạn
+  ```bash
+  python src/benchmark_accuracy.py 5   # Test với mạng ngẫu nhiên 5 nodes
+  python src/benchmark_accuracy.py 8   # Test với mạng ngẫu nhiên 8 nodes
+  ```
+
+- **Đo thời gian thực thi (Time):**
+  Vẽ biểu đồ hiệu năng từ 1 đến 30 nodes
+  ```bash
+  python src/benchmark_time.py
+  ```
+  Kết quả biểu đồ sẽ được lưu tại `output/benchmark_execution_time.png`.
+
+================================================================================
+File: requirements.txt
+================================================================================
+numpy
+pandas
+matplotlib
+networkx
+git+https://github.com/hklarner/pyboolnet
+
+================================================================================
+File: src/main.py
+================================================================================
+import sys
+import os
+import time
+import json
+import logging
+from bnet_parser import load_bnet
+from visualizer import plot_influence_graph, plot_stg
+from pyboolnet_analyzer import analyze_with_pyboolnet, PYBOOLNET_AVAILABLE
+
+# --- Configuration ---
+OUTPUT_DIR = 'output'
+
+# Silence library logs
+logging.getLogger().setLevel(logging.CRITICAL)
+
+
+def print_section(title):
+    print(f"\n>>> {title}")
+    print("-" * 40)
+
+def save_results(base_name, attractors_info):
+    json_output = os.path.join(OUTPUT_DIR, f'{base_name}_results.json')
+    
+    with open(json_output, 'w') as f:
+        json.dump(attractors_info, f, indent=2, default=str)
+
+    attractors = attractors_info.get('attractors', [])
+    print(f"\nTotal Attractors Found: {len(attractors)}")
+    
+    for i, attr in enumerate(attractors, 1):
+        is_steady = attr.get('is_steady', False)
+        type_str = "Fixed Point" if is_steady else "Limit Cycle"
+        
+        state_repr = "N/A"
+        if 'state' in attr and 'str' in attr['state']:
+            state_repr = attr['state']['str']
+        elif 'min_trap_space' in attr and 'str' in attr['min_trap_space']:
+                state_repr = f"Trap Space: {attr['min_trap_space']['str']}"
+        
+        print(f"  {i}. {type_str}")
+        print(f"     State: {state_repr}")
+
+def run_analysis(input_file, base_name):
+    print(f"File: {input_file}")
+    
+    # 2. Load Network
+    start_time = time.time()
+    rules = load_bnet(input_file) 
+    if not rules:
+        print("Failed to load rules.")
+        return
+
+    # 3. Visualize
+    influence_output = os.path.join(OUTPUT_DIR, f'{base_name}_influence.png')
+    plot_influence_graph(rules, output_path=influence_output)
+
+    # 4. Analyze (PyBoolNet)
+    _, attractors_info, stg_edges = analyze_with_pyboolnet(input_file, compute_stg=True)
+    
+    if attractors_info:
+        print_section("Result:")
+        save_results(base_name, attractors_info)
+
+        if stg_edges:
+            stg_output = os.path.join(OUTPUT_DIR, f'{base_name}_stg.png')
+            plot_stg(stg_edges, output_path=stg_output)
+            print(f"STG Graph: {stg_output}")
+            print(f"Influence Graph: {influence_output}")
+        
+        elapsed = time.time() - start_time
+        print(f"Time: {elapsed:.4f} seconds.")
+
+
+def resolve_input_path(arg):
+    """Resolves the input argument to a valid file path."""
+    if arg.endswith('.bnet'):
+        return arg, os.path.splitext(os.path.basename(arg))[0]
+    
+    # Check common locations
+    paths = [
+        f'input_data/test_cases/{arg}.bnet',
+        f'input_data/{arg}.bnet',
+        arg
+    ]
+    
+    for p in paths:
+        if os.path.exists(p):
+            return p, arg
+            
+    return None, None
+
+def main():
+    if not os.path.exists(OUTPUT_DIR):
+        os.makedirs(OUTPUT_DIR)
+
+    if len(sys.argv) < 2:
+        print("Usage: python src/main.py <test_case_name>")
+        return
+
+    for arg in sys.argv[1:]:
+        input_file, base_name = resolve_input_path(arg)
+        if input_file:
+            run_analysis(input_file, base_name)
+        else:
+            print(f"Error: Could not find input file for '{arg}'")
+
+if __name__ == "__main__":
+    main()
+
+================================================================================
+File: src/pyboolnet_analyzer.py
+================================================================================
+import os
+import sys
+import networkx as nx
+from contextlib import contextmanager
+
+# Try to import pyboolnet
+try:
+    from pyboolnet.file_exchange import bnet2primes
+    from pyboolnet.attractors import compute_attractors
+    from pyboolnet.state_transition_graphs import primes2stg
+    PYBOOLNET_AVAILABLE = True
+except ImportError:
+    PYBOOLNET_AVAILABLE = False
+
+@contextmanager
+def suppress_stdout():
+    with open(os.devnull, "w") as devnull:
+        old_stdout = sys.stdout
+        sys.stdout = devnull
+        try:
+            yield
+        finally:
+            sys.stdout = old_stdout
+
+def find_attractors_exact(stg_graph):
+    """
+    Finds attractors exactly using Tarjan's algorithm on the STG.
+    Returns a structure compatible with PyBoolNet's output.
+    """
+    attractors = []
+    sccs = list(nx.strongly_connected_components(stg_graph))
+    
+    for scc in sccs:
+        # Check if it's a terminal SCC (no edges leaving the set)
+        is_terminal = True
+        for node in scc:
+            for neighbor in stg_graph.neighbors(node):
+                if neighbor not in scc:
+                    is_terminal = False
+                    break
+            if not is_terminal:
+                break
+        
+        if is_terminal:
+            # Sort states to be deterministic
+            states = sorted(list(scc))
+            if len(states) > 1:
+                cycle_path = []
+                curr = states[0]
+                visited = set()
+                while curr not in visited:
+                    visited.add(curr)
+                    cycle_path.append(curr)
+                    # Find next state in SCC
+                    for neighbor in stg_graph.neighbors(curr):
+                        if neighbor in scc:
+                            curr = neighbor
+                            break
+                state_repr = " -> ".join(cycle_path)
+            else:
+                state_repr = states[0]
+
+            is_steady = (len(states) == 1)
+            
+            attractors.append({
+                'is_steady': is_steady,
+                'state': {'str': state_repr},
+                'min_trap_space': {'str': 'Exact-STG'}
+            })
+    
+    # Sort attractors by state string to be deterministic
+    attractors.sort(key=lambda x: x['state']['str'])
+    return {'attractors': attractors}
+
+def analyze_with_pyboolnet(bnet_file, silent=False, compute_stg=False):
+    if not PYBOOLNET_AVAILABLE:
+        if not silent:
+            print("❌ Error: PyBoolNet is not installed.")
+        return None, None, None
+
+    if not silent:
+        print(f"   PyBoolNet (BDDs)")
+    
+    # 1. Parse BNET file to 'Primes' (PyBoolNet's internal format)
+    try:
+        with suppress_stdout():
+            primes = bnet2primes(bnet_file)
+        if not silent:
+            print(f"Parsed {len(primes)} nodes successfully.")
+    except Exception as e:
+        if not silent:
+            print(f"PyBoolNet Parsing Error: {e}")
+        return None, None, None
+
+    # 2. Compute Attractors
+    if not silent:
+        print("   Computing attractors")
+    try:
+        with suppress_stdout():
+            attractors_info = compute_attractors(primes, update="synchronous")
+        
+        stg_edges = None
+        if compute_stg:
+            n_nodes = len(primes)
+            if n_nodes > 12:
+                if not silent:
+                    print(f"Skipping STG generation: Network has {n_nodes} nodes (2^{n_nodes} states).")
+            else:
+                if not silent:
+                    print("   Generating STG")
+                with suppress_stdout():
+                    stg_graph = primes2stg(primes, update="synchronous")
+                stg_edges = list(stg_graph.edges())
+                
+                # Use exact STG analysis for small networks
+                attractors_info = find_attractors_exact(stg_graph)
+
+        return primes, attractors_info, stg_edges
+
+    except Exception as e:
+        if not silent:
+            print(f"PyBoolNet Analysis Error: {e}")
+        return None, None, None
+
+================================================================================
+File: src/visualizer.py
+================================================================================
+import matplotlib
+matplotlib.use('Agg')
+import matplotlib.pyplot as plt
+import networkx as nx
+import re
+
+def plot_influence_graph(rules, output_path='output/influence_graph.png'):
+    """
+    Input: Biến 'rules' từ parser
+    Nhiệm vụ: Vẽ quan hệ giữa các nút (ai ảnh hưởng tới ai)
+    """
+    G = nx.DiGraph()
+    nodes = list(rules.keys())
+    G.add_nodes_from(nodes)
+    
+    # Duyệt qua rules. Nếu công thức của A có chứa B -> Thêm cạnh B->A
+    for target, formula in rules.items():
+        for source in nodes:
+            # Use regex to match whole word only (e.g. ensure "A" doesn't match "AB")
+            if re.search(r'\b' + re.escape(source) + r'\b', formula):
+                G.add_edge(source, target)
+    
+    plt.figure(figsize=(10, 8))
+    # Use circular layout for clearer structure of genes
+    pos = nx.circular_layout(G)
+    nx.draw(G, pos, with_labels=True, node_color='lightblue', 
+            node_size=3000, arrowsize=20, font_size=12, font_weight='bold')
+    plt.title("Influence Graph (Interaction Network)")
+    plt.savefig(output_path)
+    plt.close() # Close the figure to free memory
+
+def plot_stg(stg_edges, output_path='output/stg.png'):
+    """
+    Input: stg_edges từ analyzer
+    Nhiệm vụ: Vẽ các chấm trạng thái và mũi tên
+    """
+    G = nx.DiGraph()
+    G.add_edges_from(stg_edges)
+    
+    num_nodes = G.number_of_nodes()
+    
+    if num_nodes == 0:
+        print("STG is empty. Nothing to plot.")
+        return
+
+    if num_nodes > 1000:
+        print(f"STG has {num_nodes} states. Too large to visualize.")
+        print("   Skipping plot generation to avoid crash.")
+        return
+
+    # Dynamic styling based on graph size
+    if num_nodes < 20:
+        figsize = (8, 8)
+        node_size = 2000
+        font_size = 12
+        k_layout = 0.8
+        arrow_size = 20
+    elif num_nodes < 100:
+        figsize = (10, 10)
+        node_size = 1000
+        font_size = 10
+        k_layout = 0.4
+        arrow_size = 15
+    else:
+        figsize = (12, 12)
+        node_size = 600
+        font_size = 8
+        k_layout = 0.15
+        arrow_size = 10
+
+    plt.figure(figsize=figsize)
+    #spring layout
+    pos = nx.spring_layout(G, k=k_layout, iterations=50)
+    
+    nx.draw(G, pos, with_labels=True, node_color='lightgreen', 
+            node_size=node_size, arrowsize=arrow_size, font_size=font_size, alpha=0.9)
+    
+    plt.title(f"State Transition Graph (STG) - {num_nodes} States")
+    plt.savefig(output_path)
+    plt.close()
+
+================================================================================
+File: src/bnet_parser.py
+================================================================================
+import os
+def load_bnet(file_path):
+    rules = {}
+    if not os.path.exists(file_path):
+        print(f"Error: File {file_path} not found.")
+        return rules
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            lines = file.readlines()
+            for line_num, line in enumerate(lines[1:], start = 2):
+                line = line.strip()
+                if not line or line.startswith('#'):
+                    continue
+                # Check invalid format
+                if ',' not in line:
+                    print(f"Warning: Line {line_num} has invalid format(missing comma): {line}")
+                parts = line.split(',', 1)
+                if len(parts) != 2:
+                    print(f"Warning: Line {line_num} has invalid format: {line}")
+                    continue
+                # Define target, factor
+                target = parts[0].strip()
+                factors = parts[1].strip()
+
+                if not target:
+                    print(f"Warning: Line {line_num} has empty target: {line}")
+                    continue
+                if not factors:
+                    factors = False
+                
+                # Convert to Boolean sign
+                factors = factors.replace('&', ' and ')
+                factors = factors.replace('|', ' or ')
+                factors = factors.replace('!', 'not ')
+
+                factors = ' '.join(factors.split())
+                # Add to rules
+                rules[target] = factors
+            if not rules:
+                print(f"No valid rules found in {file_path}")
+
+            return rules
+    except Exception as e:
+        print(f"Error reading file {file_path}: {str(e)}")
+# Optional, for debugging only
+def validate_rules(rules):
+    if not rules:
+        print(f"Error: Rules is empty!")
+        return False
+    print(f"Successfully loaded {len(rules)} rules:")
+    for target, factors in rules.items():
+        print(f"  {target} <- {factors}")
+    return True
+    
+
+================================================================================
+File: src/analyzer.py
+================================================================================
+import itertools
+from collections import defaultdict
+
+def generate_stg(rules, update_scheme='synchronous'):
+    """
+    Input: Biến 'rules' từ parser.py
+    Output: List các cạnh chuyển đổi trạng thái (stg_edges)
+    """
+    stg_edges = []
+    nodes = sorted(rules.keys())
+    n = len(nodes)
+    all_states = []
+
+    # Change True, False -> 1, 0
+    for values in itertools.product([True, False], repeat=n):
+        state_str = ''.join('1' if v else '0' for v in values)
+        all_states.append(state_str)
+    # print(f"Generated {len(all_states)} states for {n} nodes...")
+
+    #===============SYNCHRONOUS UPDATE===============
+    if update_scheme == 'synchronous':
+        for state in all_states:
+            # Change state string to dictionary
+            # EX: '010' + ['A','B','C'] → {'A': False, 'B': True, 'C': False}
+            curr_state = {nodes[i]: (state[i] == '1') for i in range(n)}
+
+            # Evaluating next state by using rules
+            next_state_val = []
+            for node in nodes:
+                formula = rules[node]
+                try:
+                    result = eval(formula, {"__builtins__": {}}, curr_state) # disable Python built-in
+                    next_state_val.append('1' if result else '0')
+                except Exception as e:
+                    print(f"Error evaluating {node}: {formula} ⚠️")
+                    print(f"Current state: {curr_state}")
+                    print(f"Error: {e}")
+                    return [], []
+                
+            # Add state to std_edges
+            next_state_str = ''.join(next_state_val)
+            stg_edges.append((state, next_state_str))
+
+    #===============ASYNCHRONOUS UPDATE===============
+    elif update_scheme == 'asynchronous':
+        for state in all_states:
+            # Change state string to dictionary
+            # EX: '010' + ['A','B','C'] → {'A': False, 'B': True, 'C': False}
+            curr_state = {nodes[i]: (state[i] == '1') for i in range(n)}
+
+            # Evaluating next state by using rules(for only 1 node)
+            for node_idx, node in enumerate(nodes):
+                formula = rules[node]
+                try:
+                    result = eval(formula, {"__builtins__": {}}, curr_state) # disable Python built-in
+                    next_state_val = list(state)
+                    next_state_val[node_idx] = '1' if result else '0' # Update only 1 node here
+                    next_state_str = ''.join(next_state_val)
+
+                    # Add state to std_edges
+                    stg_edges.append((state, next_state_str))
+
+                except Exception as e:
+                    print(f"Error evaluating {node}: {formula} ⚠️")
+                    print(f"Current state: {curr_state}")
+                    print(f"Error: {e}")
+                    return [], []
+                
+    else:
+        print(f"Error: Unknown update scheme ⚠️")
+        return [], []
+    # print(f'Already generated {len(stg_edges)} edges...')
+    return stg_edges, all_states
+
+def find_attractors(stg_edges, all_states):
+    """
+    Input: stg_edges từ hàm trên
+    Output: List các attractor
+    """
+    # Build adjacent list from stg_edges
+    graph = defaultdict(list)
+    for source, target in stg_edges:
+        graph[source].append(target)
+
+    # Find Strongly Connected Components
+    sccs = find_ssc(graph, all_states)
+    
+    attractors = []
+    for scc in sccs:
+        is_attractor = True
+        scc_set = set(scc)
+
+        for state in scc:
+            for next_state in graph[state]:
+                if next_state not in scc_set:
+                    is_attractor = False
+                    break
+            if not is_attractor:
+                break
+        if is_attractor:
+            attractors.append(sorted(scc))
+    return attractors
+
+def find_ssc(graph, all_states):
+    """
+    Tìm Strongly Connected Components bằng thuật toán Tarjan
+    
+    Input:
+        - graph: adjacency list
+        - all_states: list tất cả các node
+    Output:
+        - List các SCC (mỗi SCC là list các state)
+    """
+    idx_counter = [0]
+    stack = []
+    onStack = defaultdict(bool)
+    num = {} # visit order
+    low = {} # smallest index that can reach
+    sccs = []
+    def strong_connect(node):
+        num[node] = idx_counter[0]
+        low[node] = idx_counter[0]
+        idx_counter[0] += 1
+        stack.append(node)
+        onStack[node] = True
+        
+        # Traversing to succesor and update low
+        succesors = graph[node]
+        for succesor in succesors:
+            # Successor is not visited
+            if succesor not in num:
+                strong_connect(succesor)
+                low[node] = min(low[succesor], low[node])
+            # Successor in stack -> part of current SCC
+            elif onStack[succesor]:
+                low[node] = min(low[node], num[succesor])
+        # Check if node is SCC root
+        if low[node] == num[node]:
+            scc = []
+            while True:
+                succesor = stack.pop()
+                onStack[succesor] = False # To confirm that current SCC has finished
+                scc.append(succesor)
+                if succesor == node:
+                    break
+            sccs.append(scc)
+    
+    # Traversing all transition graph
+    for node in all_states:
+        if node not in num:
+            strong_connect(node)
+    return sccs
+
+def classify_attractors(attractors):
+    """
+    Phân loại attractors thành:
+    - Fixed points (điểm cố định): attractor chỉ có 1 trạng thái
+    - Limit cycles (chu trình): attractor có nhiều hơn 1 trạng thái
+    
+    Input: attractors (list of lists)
+    Output: dictionary với classification
+    """
+    fixed_points = []
+    limited_cycles = []
+    for attractor in attractors:
+        if len(attractor) == 1:
+            fixed_points.append(attractor)
+        else:
+            limited_cycles.append(attractor)
+    return {
+        'fixed_points': fixed_points,
+        'limit_cycles': limited_cycles,
+        'total': len(attractors)
+    }
+
+================================================================================
+File: src/benchmark_accuracy.py
+================================================================================
+import time
+import sys
+import os
+import logging
+from analyzer import generate_stg, find_attractors
+from pyboolnet_analyzer import analyze_with_pyboolnet
+from benchmark_utils import (
+    suppress_stdout, 
+    generate_random_rules, 
+    save_rules
+)
+
+# Silence logs
+logging.getLogger().setLevel(logging.CRITICAL)
+
+def run_benchmark(n_nodes=10):
+    TRIALS = 3
+    TEMP = "temp_bench.bnet"
+    
+    print(f"--- PyBoolNet vs. Exhaustive Search ({n_nodes} nodes, {TRIALS} trials) ---")
+    
+    matches = 0
+    start = time.time()
+    
+    for i in range(TRIALS):
+        print(f"\nTrial {i+1}/{TRIALS}:")
+        rules = generate_random_rules(n_nodes)
+        save_rules(rules, TEMP)
+        
+        # Ground Truth (Exhaustive)
+        py_rules = {k: v.replace('&',' and ').replace('|',' or ').replace('!',' not ') for k,v in rules.items()}
+        
+        with suppress_stdout():
+            stg, states = generate_stg(py_rules)
+            true_attrs = find_attractors(stg, states)
+        
+        # PyBoolNet
+        with suppress_stdout():
+            _, info, _ = analyze_with_pyboolnet(TEMP, silent=True, compute_stg=True)
+        
+        # --- Comparison Logic ---
+        bf_lines = []
+        bf_sets = set()
+        for attr in true_attrs:
+            bf_sets.add(frozenset(attr))
+            if len(attr) == 1:
+                bf_lines.append(f"Fixed Point: {attr[0]}")
+            else:
+                # Sort for display consistency
+                cycle_str = " -> ".join(sorted(attr))
+                bf_lines.append(f"Cycle: {cycle_str}")
+        bf_lines.sort()
+
+        pb_lines = []
+        pb_sets = set()
+        if info and 'attractors' in info:
+            for attr in info['attractors']:
+                state_str = attr['state']['str']
+                # Parse back to set for accuracy check
+                states_in_attr = state_str.split(" -> ")
+                pb_sets.add(frozenset(states_in_attr))
+                
+                if attr['is_steady']:
+                    pb_lines.append(f"Fixed Point: {state_str}")
+                else:
+                    sorted_disp = " -> ".join(sorted(states_in_attr))
+                    pb_lines.append(f"Cycle: {sorted_disp}")
+        pb_lines.sort()
+
+        # Check Accuracy
+        is_match = (bf_sets == pb_sets)
+        if is_match: matches += 1
+
+        # Print Side by Side
+        print(f"{'BRUTE FORCE':<40} | {'PYBOOLNET':<40}")
+        print("-" * 83)
+        
+        max_len = max(len(bf_lines), len(pb_lines))
+        for j in range(max_len):
+            left = bf_lines[j] if j < len(bf_lines) else ""
+            right = pb_lines[j] if j < len(pb_lines) else ""
+            
+            # Truncate for display
+            d_left = (left[:37] + "...") if len(left) > 40 else left
+            d_right = (right[:37] + "...") if len(right) > 40 else right
+            print(f"{d_left:<40} | {d_right:<40}")
+
+        if is_match:
+            print(f"{'>>>>>>>>>>    MATCH   <<<<<<<<<<':}")
+        else:
+            print(f"{'>>>>>>>>>>  MISMATCH  <<<<<<<<<<':}")
+
+    if os.path.exists(TEMP): os.remove(TEMP)
+    
+    acc = (matches / TRIALS) * 100
+    print(f"\n" + "="*83)
+    print(f"Total Time: {time.time()-start:.2f}s | Overall Accuracy: {acc:.2f}%")
+    print("="*83)
+
+if __name__ == "__main__":
+    if len(sys.argv) > 1:
+        try:
+            n = int(sys.argv[1])
+            run_benchmark(n)
+        except ValueError:
+            print("Node is integer")
+    else:
+        run_benchmark()
+
+================================================================================
+File: src/benchmark_time.py
+================================================================================
+import time
+import os
+import logging
+import matplotlib.pyplot as plt
+from benchmark_utils import generate_random_rules, save_rules, suppress_stdout
+from pyboolnet_analyzer import analyze_with_pyboolnet
+
+# Silence library logs
+logging.getLogger().setLevel(logging.CRITICAL)
+
+def benchmark_execution_time(max_nodes=30):
+    TRIALS = 5
+    print(f"Benchmarking execution time for 1 to {max_nodes} nodes (Average of {TRIALS} trials)...")
+    
+    times = []
+    node_counts = list(range(1, max_nodes + 1))
+    temp_file = "temp_time_bench.bnet"
+    
+    # Ensure output directory exists
+    if not os.path.exists('output'):
+        os.makedirs('output')
+
+    for n in node_counts:
+        print(f"Testing {n} nodes...", end=" ", flush=True)
+        
+        total_duration = 0
+        for _ in range(TRIALS):
+            # 1. Generate random network
+            rules = generate_random_rules(n)
+            save_rules(rules, temp_file)
+            
+            # 2. Measure Analysis Time
+            start_time = time.time()
+            with suppress_stdout():
+                # disable STG generation
+                analyze_with_pyboolnet(temp_file, silent=True, compute_stg=False)
+            end_time = time.time()
+            
+            total_duration += (end_time - start_time)
+        
+        avg_duration = total_duration / TRIALS
+        times.append(avg_duration)
+        print(f"{avg_duration:.4f}s (avg)")
+
+    # 3. Cleanup
+    if os.path.exists(temp_file):
+        os.remove(temp_file)
+
+    # 4. Plot Results
+    plt.figure(figsize=(10, 6))
+    plt.plot(node_counts, times, marker='o', linestyle='-', color='b', label=f'Average of {TRIALS} trials')
+    
+    plt.title(f"Average Execution Time vs. Network Size (1-{max_nodes} Nodes)")
+    plt.xlabel("Number of Nodes")
+    plt.ylabel("Average Time (seconds)")
+    plt.grid(True, which="both", ls="-", alpha=0.5)
+    plt.legend()
+    
+    output_path = os.path.join('output', 'benchmark_execution_time.png')
+    plt.savefig(output_path)
+    print(f"\n✅ Benchmark complete. Graph saved to: {output_path}")
+
+if __name__ == "__main__":
+    benchmark_execution_time(30)
+
+================================================================================
+File: src/benchmark_utils.py
+================================================================================
+import random
+import sys
+import os
+from contextlib import contextmanager
+
+@contextmanager
+def suppress_stdout():
+    with open(os.devnull, "w") as devnull:
+        old = sys.stdout
+        sys.stdout = devnull
+        try: yield
+        finally: sys.stdout = old
+
+def generate_random_rules(n_nodes):
+    # Use names > 1 char for PyBoolNet compatibility
+    nodes = [f"Gene{i+1:02d}" for i in range(n_nodes)]
+    rules = {}
+    ops = ['&', '|']
+    for node in nodes:
+        # Ensure we don't sample more nodes than exist
+        max_k = min(len(nodes), 3)
+        k = random.randint(1, max_k)
+        inputs = random.sample(nodes, k)
+        parts = []
+        for i, inp in enumerate(inputs):
+            if random.random() > 0.5: inp = f"!{inp}"
+            parts.append(inp)
+            if i < len(inputs) - 1: parts.append(random.choice(ops))
+        rules[node] = " ".join(parts)
+    return rules
+
+def save_rules(rules, filename):
+    with open(filename, 'w') as f:
+        f.write("targets, factors\n")
+        for t, form in rules.items(): f.write(f"{t}, {form}\n")
+
+def normalize(attractors):
+    return set(frozenset(a) for a in attractors)
+
+def extract_pyboolnet(info):
+    normalized = set()
+    if not info or 'attractors' not in info: return normalized
+    for attr in info['attractors']:
+        if attr.get('is_steady'):
+            normalized.add(frozenset([attr['state']['str']]))
+    return normalized

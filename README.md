@@ -4,9 +4,9 @@ Công cụ hỗ trợ phân tích và trực quan hóa **Boolean networks** sử
 
 - Đọc Boolean network từ file `.bnet`.
 - Hỗ trợ cập nhật **Synchronous** (Đồng bộ) và **Asynchronous** (Bất đồng bộ).
-- Hiển thị Influence Graph (Mạng lưới tương tác).
-- Xây dựng State Transition Graph (STG) (cho mạng nhỏ).
-- Tìm và hiển thị các Attractors (Fixed Points & Limit Cycles) với độ chính xác 100%.
+- Hiển thị Influence Graph.
+- Xây dựng State Transition Graph (STG) cho mạng nhỏ.
+- Tìm và hiển thị các Attractors, Fixed Points & Limit Cycles với độ chính xác 100%.
 
 # Hiệu suất
 - **Công nghệ:** Sử dụng Binary Decision Diagrams (BDDs) thông qua thư viện `PyBoolNet`.
@@ -17,7 +17,7 @@ Công cụ hỗ trợ phân tích và trực quan hóa **Boolean networks** sử
 
 # Công cụ sử dụng
 - Python 3.9+
-- **PyBoolNet** (Core Engine)
+- **PyBoolNet** (Backend)
 - NetworkX, Matplotlib (Visualization)
 
 # Cấu trúc thư mục
@@ -43,7 +43,7 @@ python src/main.py tc_6
 ```
 
 ### 2. Chạy phân tích Asynchronous
-Sử dụng cờ `--async` để kích hoạt chế độ cập nhật bất đồng bộ.
+Sử dụng flag `--async` để kích hoạt chế độ cập nhật bất đồng bộ.
 ```bash
 python src/main.py tc_6 --async
 ```

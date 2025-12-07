@@ -64,9 +64,7 @@ python src/main.py tc_6 --async
     -   Điều phối luồng chạy: Parser -> Analyzer -> Visualizer.
     -   Xuất kết quả ra màn hình và lưu vào thư mục `output/`.
 
-# Note: Biến `rules` là gì?
-
-* **Về mặt ý nghĩa:** Nó đại diện cho **cấu trúc mạng lưới** (Network Topology). Nó quy định nút nào điều khiển nút nào.
+# Note: Cách xử lí dữ liệu
 * **Về mặt luồng dữ liệu (Data Flow):**
     1.  **File .bnet** (Input thô) chứa quy tắc viết cho người đọc (VD: `A, B | !C`).
     2.  **Parser** chuyển hóa nó thành **`rules`** (VD: `'A': 'B or not C'`) để Python có thể hiểu và tính toán được.
@@ -105,7 +103,7 @@ pip install -r requirements.txt
 3. **Chạy chương trình**
 - **Chạy với Test Case có sẵn:**
 ```bash
-  python src/main.py <test case name> <test case name #2> 
+  python src/main.py <test case name> <test case name #2> --arg (default blank: sync, or --async) 
 ```
   hoặc 
   ```bash
